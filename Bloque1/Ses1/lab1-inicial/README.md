@@ -1,9 +1,9 @@
 
-# 🚀 LAB 1 - Aplicación Monolítica de Gestión de Usuarios, Productos, Pedidos y Pagos
+# LAB 1 - Aplicación Monolítica de Gestión de Usuarios, Productos, Pedidos y Pagos
 
 
 
-## 📝 Enunciado
+## Enunciado
 
 En este laboratorio se parte de una aplicación monolítica construida con **FastAPI**:
 
@@ -16,7 +16,7 @@ Este monolito simula una aplicación real donde los distintos dominios de negoci
 
 ---
 
-### 🖼️ Diagrama Entidad-Relación (ERD)
+### Diagrama Entidad-Relación (ERD)
 
 ```mermaid
 erDiagram
@@ -53,11 +53,11 @@ erDiagram
     orders ||--o{ order_products : contains
     products ||--o{ order_products : belongs_to
     orders ||--|| payments : has
-````
+```
 
 ---
 
-### 🖼️ Diagrama de Clases
+### Diagrama de Clases
 
 ```mermaid
 classDiagram
@@ -96,7 +96,7 @@ classDiagram
 
 ---
 
-### 🖼️ Casos de Uso
+###  Casos de Uso
 
 ```mermaid
 flowchart TD
@@ -109,7 +109,7 @@ flowchart TD
 
 ---
 
-## 🛠️ Stack Tecnológico Actualizado
+##  Stack Tecnológico 
 
 |     Herramienta    | Descripción                       |
 | :----------------: | :-------------------------------- |
@@ -127,7 +127,7 @@ flowchart TD
 
 ---
 
-## 📦 Estructura de Carpetas
+## Estructura de Carpetas
 
 ```
 mi_monolito/
@@ -207,56 +207,212 @@ make rebuild
 
 ---
 
-## 🎯 Objetivos del Laboratorio
 
-1. **Migrar aplicación monolítica inicial a Microservicios:**
+#  **PLAN DE MIGRACIÓN A MICROSERVICIOS**
 
-   * Identificar los Bounded Contexts.
-   * Separar en `auth-service`, `product-service`, `order-service`, `payment-service`.
-   * Definir APIs REST independientes para cada microservicio.
-   * Aplicar patrones de comunicación síncrona y asíncrona.
-   * Patrón **Strangler Fig** para migración progresiva.
 
-2. **Configurar un API Gateway con NGINX:**
+#  **Objetivo General**
 
-   * Reverse Proxy hacia los microservicios.
-   * HTTPS con certificados SSL.
-   * Redirección de tráfico por rutas.
+➔ Migrar un sistema **monolítico** (FastAPI + SQLAlchemy) a una arquitectura de **microservicios** desacoplada y escalable.
 
-3. **Configurar Middlewares y Seguridad en FastAPI:**
+➔ Aplicar patrones industriales:
 
-   * CORS Policies.
-   * BaseSettings y gestión de entornos.
-   * Gunicorn como servidor WSGI.
-   * Documentación OpenAPI 3.0.
-
-4. **Implementar Circuit Breaker con PyBreaker:**
-
-   * Tolerancia a fallos en comunicación entre microservicios.
-
-5. **Implementar Autenticación JWT básica:**
-
-   * Generación y validación de tokens.
-   * Protecciones a rutas privadas.
+* **Strangler Fig** para migración progresiva.
+* **Comunicación síncrona** (REST API) y **asíncrona** (mensajería).
+* **API Gateway** con NGINX.
+* **Circuit Breakers** para resiliencia.
+* **JWT Authentication** para seguridad.
 
 ---
 
-## 🧑‍🏫 Metodología
+# 🗂️ **Índice de Trabajo**
 
-* El profesor realizará el laboratorio paso a paso utilizando **LiveShare de VSCode**.
-* Los alumnos seguirán el proceso en tiempo real o podrán acceder al repositorio donde:
-
-  * Cada **hito** estará en una **rama distinta** (`step-1-init`, `step-2-auth`, `step-3-products`, etc.).
-  * Al final de cada sesión se dispondrá de los avances en el repositorio.
-
----
-
-## 🚀 Resumen de Beneficios
-
-* **Comprensión profunda** de cómo migrar un Monolito a Microservicios.
-* **Manejo real** de Docker, Makefiles, Circuit Breakers, JWT y API Gateways.
-* **Bases sólidas** para entornos de producción.
+| Paso | Descripción                                                                                             |
+| :--- | :------------------------------------------------------------------------------------------------------ |
+| 1.   | Identificar los **Bounded Contexts**.                                                                   |
+| 2.   | Separar en **4 microservicios**: `auth-service`, `product-service`, `order-service`, `payment-service`. |
+| 3.   | Crear APIs REST independientes por microservicio.                                                       |
+| 4.   | Aplicar **Patrón Strangler Fig** para migración progresiva.                                             |
+| 5.   | Configurar **NGINX API Gateway** con HTTPS y Reverse Proxy.                                             |
+| 6.   | Configurar **Middlewares y Seguridad** en FastAPI.                                                      |
+| 7.   | Implementar **Circuit Breaker** con PyBreaker.                                                          |
+| 8.   | Implementar **Autenticación JWT básica**.                                                               |
 
 ---
 
-# 🧩 ¡Listos para comenzar la migración y romper el monolito!
+# 1️⃣ **Identificar los Bounded Contexts**
+
+---
+
+📚 **Definición**:
+Un **Bounded Context** es un límite conceptual dentro del dominio donde un modelo específico es definido y aplicable.
+
+🎯 **Nuestro Dominio Actual**:
+
+| Dominio       | Descripción                         |
+| :------------ | :---------------------------------- |
+| **Usuarios**  | Registro, login, autenticación JWT. |
+| **Productos** | Catálogo de productos.              |
+| **Pedidos**   | Gestión de pedidos de usuarios.     |
+| **Pagos**     | Procesamiento de pagos de pedidos.  |
+
+---
+
+🖼️ **Diagrama de Bounded Contexts**
+
+```mermaid
+graph TD
+  AUTH[Auth-Service]
+  PRODUCT[Product-Service]
+  ORDER[Order-Service]
+  PAYMENT[Payment-Service]
+
+  AUTH --> ORDER
+  ORDER --> PRODUCT
+  ORDER --> PAYMENT
+```
+
+---
+
+# 2️⃣ **Separar en Microservicios**
+
+---
+
+| Microservicio       |            Responsabilidad            |   Base de Datos  |
+| :------------------ | :-----------------------------------: | :--------------: |
+| **auth-service**    |       Registro, login, JWT auth       | PostgreSQL/MySQL |
+| **product-service** |           CRUD de productos           | PostgreSQL/MySQL |
+| **order-service**   | CRUD de pedidos, asignación productos | PostgreSQL/MySQL |
+| **payment-service** |    Procesamiento y gestión de pagos   | PostgreSQL/MySQL |
+
+✅ Cada microservicio:
+
+* Tendrá su propio **Dockerfile**.
+* Tendrá su propia **base de datos** (autonomía).
+* Tendrá su propio **API**.
+* Comunicación mediante **REST** inicialmente.
+
+---
+
+# 3️⃣ **Definir APIs REST Independientes**
+
+---
+
+📚 **Ejemplo de Endpoints**
+
+| Microservicio     | Endpoints                                                      |
+| :---------------- | :------------------------------------------------------------- |
+| `auth-service`    | `POST /register`, `POST /login`, `GET /profile`                |
+| `product-service` | `POST /products`, `GET /products`, `GET /products/{id}`        |
+| `order-service`   | `POST /orders`, `GET /orders`, `POST /orders/{id}/add_product` |
+| `payment-service` | `POST /payments`, `GET /payments`, `GET /payments/{id}`        |
+
+---
+
+# 4️⃣ **Aplicar Patrón Strangler Fig**
+
+---
+
+📚 **Definición**:
+Migrar progresivamente el Monolito → Microservicios **sin apagar** el sistema completo.
+
+🖼️ **Diagrama de Estrangulamiento**
+
+```mermaid
+graph TD
+  Client -->|old routes| Monolith
+  Client -->|new routes| MicroserviceGateway
+  MicroserviceGateway -->|/auth| Auth-Service
+  MicroserviceGateway -->|/products| Product-Service
+  MicroserviceGateway -->|/orders| Order-Service
+  MicroserviceGateway -->|/payments| Payment-Service
+```
+
+**Proceso**:
+
+1. Redirigir nuevas rutas al microservicio.
+2. Mantener otras en el Monolito.
+3. Ir estrangulando parte por parte.
+
+---
+
+# 5️⃣ **Configurar API Gateway con NGINX**
+
+---
+
+🎯 **Qué haremos**:
+
+* Montar un contenedor **NGINX**.
+* Configurar Reverse Proxy.
+* Configurar **HTTPS** (certificados locales o Let's Encrypt).
+* Redirigir tráfico basado en rutas:
+
+  * `/auth/*` → `auth-service`
+  * `/products/*` → `product-service`
+  * `/orders/*` → `order-service`
+  * `/payments/*` → `payment-service`
+
+---
+
+# 6️⃣ **Configurar Middlewares y Seguridad en FastAPI**
+
+---
+
+🎯 **Qué haremos en cada microservicio**:
+
+* **CORS Policies** restrictivas.
+* **BaseSettings** (`pydantic-settings`) para variables de entorno.
+* **Gunicorn** como servidor de alto rendimiento (para producción).
+* **Documentación OpenAPI** automática.
+
+---
+
+# 7️⃣ **Implementar Circuit Breaker con PyBreaker**
+
+---
+
+🎯 **Qué haremos**:
+
+* Añadir **Circuit Breaker** para llamadas entre microservicios.
+* Usar **PyBreaker**.
+* Configurar retry y fallback policies.
+
+🖼️ **Diagrama**
+
+```mermaid
+flowchart TD
+  OrderService -->|call| ProductService
+  classDef breaker fill:#f96;
+  class ProductService breaker;
+```
+
+---
+
+# 8️⃣ **Implementar Autenticación JWT Básica**
+
+---
+
+🎯 **Qué haremos**:
+
+* Registro y login (`auth-service`).
+* Generación de **JWT tokens**.
+* Protección de rutas con validación de tokens.
+
+📚 **Flujo de Autenticación**
+
+```mermaid
+sequenceDiagram
+  participant Client
+  participant AuthService
+  participant OrderService
+
+  Client->>AuthService: POST /login
+  AuthService-->>Client: JWT Token
+  Client->>OrderService: GET /orders (Authorization: Bearer <token>)
+  OrderService->>AuthService: Validate Token
+  AuthService-->>OrderService: OK / KO
+```
+
+---
+
+
