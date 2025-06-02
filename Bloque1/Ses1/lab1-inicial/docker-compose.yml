@@ -1,0 +1,33 @@
+version: "3.9"
+
+networks:
+  monolito_network:
+    driver: bridge
+
+services:
+  db:
+    image: mariadb:11.2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - monolito_network
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=monolito_db
+    networks:
+      - monolito_network
