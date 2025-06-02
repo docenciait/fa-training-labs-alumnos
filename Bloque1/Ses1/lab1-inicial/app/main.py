@@ -5,7 +5,7 @@ from app.db.database import Base, engine
 # Crear tablas
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Monolito Real 🚀")
+app = FastAPI(title="Monolito 2001 🚀")
 
 # Routers
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])

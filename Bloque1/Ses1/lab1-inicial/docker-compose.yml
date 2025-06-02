@@ -31,3 +31,13 @@ services:
       - DB_NAME=monolito_db
     networks:
       - monolito_network
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+
+
