@@ -13,3 +13,4 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 @router.get("/", response_model=list[Product])
 def list_products(db: Session = Depends(get_db)):
     return product_service.list_products(db)
+

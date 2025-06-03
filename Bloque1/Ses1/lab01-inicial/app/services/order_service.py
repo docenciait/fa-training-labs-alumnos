@@ -1,5 +1,6 @@
 from app.db import models
 from sqlalchemy.orm import Session
+from app.schemas.order import OrderUpdate
 
 def create_order(db: Session, user_id: int, product_ids: list):
     products = db.query(models.Product).filter(models.Product.id.in_(product_ids)).all()
@@ -10,7 +11,7 @@ def create_order(db: Session, user_id: int, product_ids: list):
     db.commit()
     db.refresh(db_order)
 
-    # 👉 Aquí creamos un dict manualmente
+    # Aquí creamos un dict manualmente
     return {
         "id": db_order.id,
         "user_id": db_order.user_id,
@@ -32,3 +33,25 @@ def list_orders(db: Session):
             "product_ids": product_ids
         })
     return result
+
+def update_order(db: Session, order_id: int, order_update: OrderUpdate):
+    db_order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    if db_order is None:
+        return None
+
+    update_data = order_update.dict(exclude_unset=True)
+
+    # Sólo permitimos update del status
+    if "status" in update_data:
+        db_order.status = update_data["status"]
+
+    db.commit()
+    db.refresh(db_order)
+
+    return {
+        "id": db_order.id,
+        "user_id": db_order.user_id,
+        "total_price": float(db_order.total_price),
+        "status": db_order.status,
+        "product_ids": [p.id for p in db_order.products]
+    }

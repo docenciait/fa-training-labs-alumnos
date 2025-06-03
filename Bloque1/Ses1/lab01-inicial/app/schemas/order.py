@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 class OrderCreate(BaseModel):
     user_id: int
@@ -14,3 +14,6 @@ class Order(BaseModel):
 
     class Config:
         from_attributes = True
+
+class OrderUpdate(BaseModel):
+    status: Optional[str] = None

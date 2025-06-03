@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class UserCreate(BaseModel):
     username: str
@@ -12,3 +13,9 @@ class User(BaseModel):
 
     class Config:
         from_attributes = True
+
+class UserUpdate(BaseModel):
+    # Todos los campos opcionales, porque con PUT actualizas todo
+    name: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
