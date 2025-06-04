@@ -20,40 +20,40 @@ Este monolito simula una aplicación real donde los distintos dominios de negoci
 ### Diagrama Entidad-Relación (ERD)
 
 ```mermaid
-erDiagram
-    users {
-        int id PK
-        varchar username
-        varchar email
-        varchar password_hash
-    }
-    products {
-        int id PK
-        varchar name
-        varchar description
-        decimal price
-    }
-    orders {
-        int id PK
-        int user_id FK
-        decimal total_price
-        varchar status
-    }
-    order_products {
-        int order_id FK
-        int product_id FK
-    }
-    payments {
-        int id PK
-        int order_id FK
-        decimal amount
-        datetime payment_date
-    }
+    erDiagram
+        users {
+            int id PK
+            varchar username
+            varchar email
+            varchar password_hash
+        }
+        products {
+            int id PK
+            varchar name
+            varchar description
+            decimal price
+        }
+        orders {
+            int id PK
+            int user_id FK
+            decimal total_price
+            varchar status
+        }
+        order_products {
+            int order_id FK
+            int product_id FK
+        }
+        payments {
+            int id PK
+            int order_id FK
+            decimal amount
+            datetime payment_date
+        }
 
-    users ||--o{ orders : has
-    orders ||--o{ order_products : contains
-    products ||--o{ order_products : belongs_to
-    orders ||--|| payments : has
+        users ||--o{ orders : has
+        orders ||--o{ order_products : contains
+        products ||--o{ order_products : belongs_to
+        orders ||--|| payments : has
 ```
 
 ---
