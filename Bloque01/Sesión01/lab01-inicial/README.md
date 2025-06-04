@@ -1,6 +1,8 @@
 
-# LAB 1 - Aplicación Monolítica de Gestión de Usuarios, Productos, Pedidos y Pagos
 
+# lab01-inicial
+
+# LAB 1 - Aplicación Monolítica de Gestión de Usuarios, Productos, Pedidos y Pagos
 
 ## Enunciado
 
