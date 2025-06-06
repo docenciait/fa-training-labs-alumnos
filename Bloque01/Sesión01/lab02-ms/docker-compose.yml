@@ -1,43 +1,41 @@
-version: "3.9"
-
-networks:
-  monolito_network:
-    driver: bridge
+version: "3.8"
 
 services:
-  db:
+  auth-db:
     image: mariadb:11.2
-    restart: always
+    container_name: auth-db
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: auth_db
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./auth-service/db/users.sql:/docker-entrypoint-initdb.d/users.sql
     networks:
-      - monolito_network
+      - ecommerce_net
 
-  app:
-    build: .
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
     environment:
-      - DB_USER=root
-      - DB_PASSWORD=password
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=monolito_db
+      DB_HOST: auth-db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: auth_db
+    ports:
+      - "8001:8000"
+    depends_on:
+      - auth-db
     networks:
-      - monolito_network
-    command: >
-      uvicorn app.main:app
-      --host 0.0.0.0
-      --port 8000
-      --reload
-    volumes:
-      - ./app:/app/app
-      - ./tests:/app/tests
+      - ecommerce_net
+
+
+  
+
+networks:
+  ecommerce_net:
+    driver: bridge
+
 
 
