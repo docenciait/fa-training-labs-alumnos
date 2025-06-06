@@ -30,12 +30,105 @@ services:
     networks:
       - ecommerce_net
 
+  api-gateway:
+    image: nginx:stable-alpine
+    container_name: api-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - auth-service
+    networks:
+      - ecommerce_net
 
-  
+  product-db:
+    image: mariadb:11.2
+    container_name: product-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: product_db
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./product-service/db/products.sql:/docker-entrypoint-initdb.d/products.sql
+    networks:
+      - ecommerce_net
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    environment:
+      DB_HOST: product-db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: product_db
+    ports:
+      - "8002:8000"
+    depends_on:
+      - product-db
+    networks:
+      - ecommerce_net
+
+  order-db:
+      image: mariadb:11.2
+      container_name: order-db
+      environment:
+        MYSQL_ROOT_PASSWORD: password
+        MYSQL_DATABASE: order_db
+      ports:
+        - "3309:3306"
+      volumes:
+        - ./order-service/db/orders.sql:/docker-entrypoint-initdb.d/orders.sql
+      networks:
+        - ecommerce_net
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    environment:
+      DB_HOST: order-db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: order_db
+    ports:
+      - "8003:8000"
+    depends_on:
+      - order-db
+    networks:
+      - ecommerce_net
+
+  payment-db:
+    image: mariadb:11.2
+    container_name: payment-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: payment_db
+    ports:
+      - "3310:3306"
+    volumes:
+      - ./payment-service/db/payments.sql:/docker-entrypoint-initdb.d/payments.sql
+    networks:
+      - ecommerce_net
+
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    environment:
+      DB_HOST: payment-db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_NAME: payment_db
+    ports:
+      - "8004:8000"
+    depends_on:
+      - payment-db
+    networks:
+      - ecommerce_net
 
 networks:
   ecommerce_net:
     driver: bridge
-
-
-

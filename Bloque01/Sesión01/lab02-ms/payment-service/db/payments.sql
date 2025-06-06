@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS payment_db;
+USE payment_db;
+
+CREATE TABLE IF NOT EXISTS payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    amount FLOAT NOT NULL,
+    payment_date DATETIME DEFAULT CURRENT_TIMESTAMP
+);

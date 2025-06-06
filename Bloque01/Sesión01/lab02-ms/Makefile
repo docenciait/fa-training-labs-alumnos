@@ -1,10 +1,15 @@
-.PHONY: up down clean rebuild test
+.PHONY: up down rebuild logs
 
 up:
-	docker compose up -d --build
+	docker-compose up --build -d
 
 down:
-	docker compose down --remove-orphans
+	docker-compose down
+
+rebuild:
+	docker-compose down
+	docker-compose build --no-cache
+	docker-compose up -d
 
 clean:
 	docker compose down --volumes --remove-orphans
@@ -12,7 +17,5 @@ clean:
 	docker volume prune --force
 	docker network prune --force
 
-rebuild: clean up
-
-test:
-	docker compose run --rm -e PYTHONPATH=/app app pytest tests/
+logs:
+	docker-compose logs -f --tail=100
