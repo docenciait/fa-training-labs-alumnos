@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./services/todo-api/app"
+    ]
+}

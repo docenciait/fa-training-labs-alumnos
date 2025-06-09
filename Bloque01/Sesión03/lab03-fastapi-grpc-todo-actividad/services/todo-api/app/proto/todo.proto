@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package todo;
+
+service TodoService {
+  rpc CreateTodo (CreateTodoRequest) returns (CreateTodoResponse);
+  rpc GetTodos (GetTodosRequest) returns (GetTodosResponse);
+}
+
+// UserService
+
+service UserService {
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUser (GetUserRequest) returns (GetUserResponse);
+}
+
+// End User service
+
+message CreateTodoRequest {
+  string title = 1;
+  string description = 2;
+}
+
+message CreateTodoResponse {
+  int32 id = 1;
+}
+
+message GetTodosRequest {}
+
+message GetTodosResponse {
+  repeated Todo todos = 1;
+}
+
+message Todo {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+}
+
+// clases User
+
+message CreateUserRequest {
+  string username = 1;
+  string email = 2;
+}
+
+message CreateUserResponse {
+  int32 id = 1;
+}
+
+message GetUserRequest {
+  int32 id = 1;
+}
+
+message GetUserResponse {
+  int32 id = 1;
+  string username = 2;
+  string email = 3;
+}
