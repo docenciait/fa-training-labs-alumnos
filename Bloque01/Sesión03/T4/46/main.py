@@ -50,6 +50,10 @@ def get_mock_service():
 @app.get("/breaker-status")
 def breaker_status():
     return {
-        "state": breaker.current_state.name,
+        "state": breaker.current_state,  # <-- CORRECTED LINE
         "failures": breaker.fail_counter
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=9000)
