@@ -1,0 +1,7 @@
+
+fastapi
+uvicorn
+python-jose
+fastapi-jwt-auth
+pybreaker
+requests
