@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  fastapi_app:
+    build: . # Construye la imagen usando el Dockerfile en la carpeta actual
+    container_name: mi_fastapi_app
+    # No exponemos el puerto 8000 al exterior, solo Nginx necesita verlo.
+
+  nginx:
+    image: nginx:latest
+    container_name: mi_nginx_proxy
+    ports:
+      # Mapeamos el puerto 443 del host al 443 del contenedor
+      - "443:443"
+    volumes:
+      # Montamos nuestra configuración de Nginx dentro del contenedor
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      # Montamos nuestros certificados dentro del contenedor
+      - ./cert.pem:/etc/nginx/certs/cert.pem
+      - ./key.pem:/etc/nginx/certs/key.pem
+      # - ./myCA.pem:/etc/nginx/certs/myCA.pem
+      # - ./myCA.key:/etc/nginx/certs/myCA.key
+    depends_on:
+      - fastapi_app # Nginx no arrancará hasta que la app esté lista

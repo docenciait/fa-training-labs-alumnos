@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Test CORS Estricto</title>
+</head>
+<body>
+    <h1>Prueba de Política de CORS Estricta</h1>
+    <button onclick="realizarPeticion()">Intentar Enviar Datos a la API</button>
+    <p>Abre la consola del desarrollador (F12) para ver el resultado.</p>
+    <p><strong>Origen de esta página:</strong> <script>document.write(window.location.origin)</script></p>
+
+    <script>
+        function realizarPeticion() {
+            const apiUrl = 'http://127.0.0.1:8000/api/data';
+            const token = "un-token-de-ejemplo"; 
+
+            console.log(`Intentando realizar una petición POST a ${apiUrl}...`);
+            console.log(`El origen de esta petición es: ${window.location.origin}`);
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    // Un navegador siempre añade la cabecera 'Authorization' en una petición preflight
+                    // si se incluye aquí. Es crucial para la prueba.
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "contenido": "datos enviados desde una web local" })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // Este bloque probablemente no se ejecute en un error de CORS,
+                    // ya que el error se captura en el .catch()
+                    throw new Error(`La respuesta de red no fue OK: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('✅ ¡Éxito! Respuesta:', data);
+                alert('✅ ¡Petición exitosa! Esto no debería haber ocurrido con una política estricta.');
+            })
+            .catch(error => {
+                console.error('❌ Error en la petición fetch:', error);
+                alert('❌ ¡La petición falló! Revisa la consola para ver el error de CORS. ¡Esto es lo esperado!');
+            });
+        }
+    </script>
+</body>
+</html>
