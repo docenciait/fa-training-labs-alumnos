@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+aiomysql
+pytest
+pytest-asyncio
+black
+ruff
