@@ -16,10 +16,11 @@ def send_message(evento: Evento):
     connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
     channel = connection.channel()
     channel.queue_declare(queue="mensajes")
-    channel.basic_publish(
+    channel.confirm_delivery()
+    recibido = channel.basic_publish(
         exchange="",
         routing_key="mensajes",
         body=evento.json().encode("utf-8")
     )
     connection.close()
-    return {"status": "message sent", "evento": evento}
+    return {"status": "message sent", "evento": evento, "recibiod": recibido}
