@@ -5,6 +5,7 @@ import json
 
 app = FastAPI()
 
+
 @app.post("/send")
 async def send_message(evento: Evento):
     # Conexión robusta al broker RabbitMQ

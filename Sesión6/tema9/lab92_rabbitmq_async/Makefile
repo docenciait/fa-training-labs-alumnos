@@ -12,6 +12,5 @@ clean:
 	docker volume prune --force
 	docker network prune --force
 
-
 logs:
 	docker compose logs -f
