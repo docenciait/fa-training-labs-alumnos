@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  receiver:
+    build:
+      context: ./receiver
+    ports:
+      - "8001:8000"
+
+  notifier:
+    build:
+      context: ./notifier
+    depends_on:
+      - receiver
+    ports:
+      - "8002:8000"

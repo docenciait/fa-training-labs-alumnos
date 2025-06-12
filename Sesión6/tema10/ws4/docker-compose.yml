@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    networks:
+      - pubsub_net
+    ports:
+      - "6379:6379"
+
+  fastapi_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_ws
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    networks:
+      - pubsub_net
+    environment:
+      - REDIS_URL=redis://redis:6379
+
+networks:
+  pubsub_net:
+    name: pubsub_net
+    driver: bridge

@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - internal
+
+  hex-producer:
+    build:
+      context: ./hex_producer
+    container_name: hex-producer
+    ports:
+      - "8001:8000"
+    depends_on:
+      - rabbitmq
+    networks:
+      - internal
+
+  hex-consumer:
+    build:
+      context: ./hex_consumer
+    container_name: hex-consumer
+    ports:
+      - "8002:8000"
+    depends_on:
+      - rabbitmq
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge

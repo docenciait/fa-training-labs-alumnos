@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"       # puerto para apps
+      - "15672:15672"     # RabbitMQ UI
+    networks:
+      - hexnet
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  producer:
+    build:
+      context: ./producer
+    container_name: hex-producer
+    depends_on:
+      - rabbitmq
+    networks:
+      - hexnet
+    ports:
+      - "8001:8000"       # expone el puerto del servicio FastAPI
+
+  consumer:
+    build:
+      context: ./consumer
+    container_name: hex-consumer
+    depends_on:
+      - rabbitmq
+    networks:
+      - hexnet
+    ports:
+      - "8002:8000"       # expone el puerto del servicio FastAPI
+
+networks:
+  hexnet:
+    driver: bridge

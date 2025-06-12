@@ -1,0 +1,30 @@
+services:
+  producer:
+    build: ./producer
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8000:8000" 
+    networks:
+      - micro_net
+
+  consumer:
+    build: ./consumer
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8001:8000" 
+    networks:
+      - micro_net
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - micro_net
+
+networks:
+  micro_net:
+    driver: bridge
