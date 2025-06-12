@@ -21,10 +21,11 @@ async def consume():
     await consumer.start()
     try:
         async for msg in consumer:
+            print(f"Msg: {msg }")
             data = json.loads(msg.value.decode())
             evento = Evento(**data)
             print(f"📥 Recibido evento: {evento.tipo} con ID {evento.id}")
-            mensajes.append(evento)
+            mensajes.append(data)
     finally:
         await consumer.stop()
 
@@ -34,4 +35,5 @@ async def startup_event():
 
 @app.get("/messages")
 async def get_messages():
-    return [m.dict() for m in mensajes]
+    print(f"Mensaje recibido: {mensajes}")
+    return mensajes
