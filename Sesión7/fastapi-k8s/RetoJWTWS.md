@@ -77,6 +77,28 @@ Crear un microservicio que:
 
 ---
 
+## Diagramn de concepto
+
+```
+🧑 Usuario          🌐 FastAPI App                 💾 Infraestructura
+     │                    │                                │
+     │ --> login -------->│ /login (HTTP)                  │
+     │                    │-- genera JWT ----------------> │
+     │                    │                                │
+     │--> ws://...token --> /ws/chat (WebSocket)           │
+     │                    │                                │
+     │                    │---> decode token --> User      │
+     │                    │---> conecta WebSocket -------->│ almacena en diccionario
+     │                    │                                │
+     │--- escribe texto -->                                │
+     │                    │--> ChatService                 │
+     │                    │--> verifica si admin           │
+     │                    │--> si OK --> broadcast ------->│ itera conexiones
+     │                    │                                │
+     │<--- mensaje -------- WebSocket.send_text() <--------│
+
+```
+
 ##  DIAGRAMA RESUMIDO (hexagonal)
 
 ```mermaid
