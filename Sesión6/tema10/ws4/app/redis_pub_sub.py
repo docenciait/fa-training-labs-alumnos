@@ -4,6 +4,8 @@ import asyncio
 REDIS_URL = "redis://redis:6379"
 pubsub_instances = {}  # canal -> tarea
 
+# Este es el que utiliza el /ws/channel cliente ws
+
 async def subscribe_to_channel(channel: str, callback):
     if channel in pubsub_instances:
         return  # ya hay listener
@@ -12,8 +14,12 @@ async def subscribe_to_channel(channel: str, callback):
     pubsub = client.pubsub()
     await pubsub.subscribe(channel)
     
-    p
+    
+    """
+    Crea una tarea asyncio.create_task(...) que permanece escuchando.
+    Cuando Redis recibe un nuevo mensaje, llama al callback proporcionado por FastAPI.
 
+    """
     async def reader():
         async for message in pubsub.listen():
             if message["type"] == "message":
