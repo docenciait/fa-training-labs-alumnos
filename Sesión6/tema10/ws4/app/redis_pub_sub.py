@@ -11,6 +11,8 @@ async def subscribe_to_channel(channel: str, callback):
     client = redis.from_url(REDIS_URL)
     pubsub = client.pubsub()
     await pubsub.subscribe(channel)
+    
+    p
 
     async def reader():
         async for message in pubsub.listen():
@@ -24,3 +26,21 @@ async def subscribe_to_channel(channel: str, callback):
 async def publish_to_channel(channel: str, message: str):
     client = redis.from_url(REDIS_URL)
     await client.publish(channel, message)
+
+
+# async def unsubscribe_from_channel(channel: str):
+#     instance = pubsub_instances.get(channel)
+#     if instance:
+#         task = instance["task"]
+#         pubsub = instance["pubsub"]
+
+#         task.cancel()
+#         try:
+#             await task
+#         except asyncio.CancelledError:
+#             pass
+
+#         await pubsub.unsubscribe(channel)
+#         await pubsub.close()
+
+#         del pubsub_instances[channel]

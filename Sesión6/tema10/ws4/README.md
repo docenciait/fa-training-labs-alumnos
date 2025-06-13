@@ -1,6 +1,97 @@
-Perfecto. Vamos a explicar el código **línea por línea** de los dos archivos clave del proyecto **WebSocket + Redis Pub/Sub** en FastAPI:
+## Pruebas
+
+- Puedes usar noticias como cualquier otro canal pero siempre debe llevar el parámetro message si no no lo entiende el websocket
+
+```bash
+curl -X POST "http://localhost:8000/publish/noticias?message=Hola+desde+el+backend"
+```
+
+Abrir un par de clientes para suscribirse:
+
+```bash
+ ws://localhost:8000/ws/noticias
+```
+
+## 📜 `redis_pubsub.py`
+
+[Redis Pub/Sub](https://redis.io/es/soluciones/casos-de-uso/mensajeria/#:~:text=Redis%20Pub%2FSub%20es%20un,el%20gran%20rendimiento%20son%20fundamentales.)
+
+Este archivo contiene la integración asincrónica con Redis para Pub/Sub.
+
+```python
+import redis.asyncio as redis
+import asyncio
+```
+
+🔸 Usamos el cliente oficial `redis.asyncio`, moderno y mantenido.
 
 ---
+
+### Configuración
+
+```python
+REDIS_URL = "redis://redis:6379"
+pubsub_instances = {}  # canal -> tarea activa
+```
+
+🔸 `pubsub_instances` se usa para evitar crear múltiples listeners para el mismo canal.
+
+---
+
+### 📥 `subscribe_to_channel(channel, callback)`
+
+```python
+async def subscribe_to_channel(channel: str, callback):
+    if channel in pubsub_instances:
+        return  # ya existe un listener
+```
+
+🔹 Evita duplicar listeners si ya se está suscrito a ese canal.
+
+```python
+    client = redis.from_url(REDIS_URL)
+    pubsub = client.pubsub()
+    await pubsub.subscribe(channel)
+```
+
+🔸 Se conecta a Redis y se suscribe al canal.
+
+---
+
+### Escucha continua
+
+```python
+    async def reader():
+        async for message in pubsub.listen():
+            if message["type"] == "message":
+                data = message["data"].decode()
+                await callback(data)
+```
+
+🔸 Esta función se ejecuta en bucle y llama al callback cada vez que Redis publica un mensaje.
+
+```python
+    task = asyncio.create_task(reader())
+    pubsub_instances[channel] = task
+```
+
+🔸 Crea una tarea de fondo con `asyncio.create_task` para que el listener viva de forma independiente.
+
+---
+
+### 📤 `publish_to_channel(channel, message)`
+
+```python
+async def publish_to_channel(channel: str, message: str):
+    client = redis.from_url(REDIS_URL)
+    await client.publish(channel, message)
+```
+
+🔹 Publica un mensaje en el canal Redis.
+🔹 Automáticamente será recibido por todos los listeners suscritos al mismo canal.
+
+---
+
 
 ## 📜 `main.py`
 
@@ -105,105 +196,6 @@ async def send_to_channel(channel: str, message: str):
 
 ---
 
-## 📜 `redis_pubsub.py`
 
-Este archivo contiene la integración asincrónica con Redis para Pub/Sub.
 
-```python
-import redis.asyncio as redis
-import asyncio
-```
 
-🔸 Usamos el cliente oficial `redis.asyncio`, moderno y mantenido.
-
----
-
-### Configuración
-
-```python
-REDIS_URL = "redis://redis:6379"
-pubsub_instances = {}  # canal -> tarea activa
-```
-
-🔸 `pubsub_instances` se usa para evitar crear múltiples listeners para el mismo canal.
-
----
-
-### 📥 `subscribe_to_channel(channel, callback)`
-
-```python
-async def subscribe_to_channel(channel: str, callback):
-    if channel in pubsub_instances:
-        return  # ya existe un listener
-```
-
-🔹 Evita duplicar listeners si ya se está suscrito a ese canal.
-
-```python
-    client = redis.from_url(REDIS_URL)
-    pubsub = client.pubsub()
-    await pubsub.subscribe(channel)
-```
-
-🔸 Se conecta a Redis y se suscribe al canal.
-
----
-
-### Escucha continua
-
-```python
-    async def reader():
-        async for message in pubsub.listen():
-            if message["type"] == "message":
-                data = message["data"].decode()
-                await callback(data)
-```
-
-🔸 Esta función se ejecuta en bucle y llama al callback cada vez que Redis publica un mensaje.
-
-```python
-    task = asyncio.create_task(reader())
-    pubsub_instances[channel] = task
-```
-
-🔸 Crea una tarea de fondo con `asyncio.create_task` para que el listener viva de forma independiente.
-
----
-
-### 📤 `publish_to_channel(channel, message)`
-
-```python
-async def publish_to_channel(channel: str, message: str):
-    client = redis.from_url(REDIS_URL)
-    await client.publish(channel, message)
-```
-
-🔹 Publica un mensaje en el canal Redis.
-🔹 Automáticamente será recibido por todos los listeners suscritos al mismo canal.
-
----
-
-## ✅ Resumen del flujo completo
-
-```mermaid
-flowchart TD
-  A[Cliente WebSocket se conecta a /ws/{canal}] --> B[Acepta conexión y registra socket]
-  B --> C[Se suscribe en Redis al canal]
-  D[Otro cliente o API REST publica en /publish/{canal}]
-  D --> E[Redis recibe mensaje]
-  E --> F[Callback reenvía mensaje a todos los WebSocket de ese canal]
-```
-
----
-
-## Pruebas
-
-```bash
-curl -X POST "http://localhost:8000/publish/noticias?message=Hola+desde+el+backend"
-```
-
-Abrir un par de:
-
-```bash
- ws://localhost:8000/ws/noticias
-```

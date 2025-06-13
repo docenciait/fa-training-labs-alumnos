@@ -1,6 +1,4 @@
-Por supuesto. Aquí tienes un **enunciado profesional, claro y bien estructurado** del laboratorio para **integrar WebSockets en una arquitectura hexagonal en FastAPI sin Redis**.
 
----
 
 # 🧪 LABORATORIO – Integración de WebSockets en Arquitectura Hexagonal (FastAPI, sin Redis)
 
