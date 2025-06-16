@@ -11,6 +11,7 @@ class GetPedidoHandler:
             return None
         return PedidoDTO.model_validate(pedido)
 
+# Lista pedidos realizados
 class ListarPedidosPorUsuarioHandler:
     def __init__(self, repo: PedidoRepository):
         self.repo = repo
@@ -19,6 +20,7 @@ class ListarPedidosPorUsuarioHandler:
         pedidos = self.repo.get_all_by_usuario(usuario_id)
         return [PedidoDTO.model_validate(p) for p in pedidos]
 
+# Conteo pedidos
 class ContarPedidosPendientesHandler:
     def __init__(self, repo: PedidoRepository):
         self.repo = repo

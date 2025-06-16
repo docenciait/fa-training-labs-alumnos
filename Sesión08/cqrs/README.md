@@ -2,7 +2,7 @@
 
 ## CQRS: Separación de Responsabilidades de Comando y Consulta
 
-El patrón **CQRS (Command Query Responsibility Segregation)** es un diseño arquitectónico que propone **separar la responsabilidad de la lectura (query) de la responsabilidad de la escritura (command)** en una aplicación. Esta separación permite optimizar cada una de estas operaciones de forma independiente, lo que puede resultar en un sistema más escalable, flexible y fácil de mantener.
+El patrón **CQRS (Command Query Responsibility Segregation)** es un patrón arquitectónico que propone **separar la responsabilidad de la lectura (query) de la responsabilidad de la escritura (command)** en una aplicación. Esta separación permite optimizar cada una de estas operaciones de forma independiente, lo que puede resultar en un sistema más escalable, flexible y fácil de mantener.
 
 ---
 
@@ -42,6 +42,8 @@ Aunque es potente, CQRS presenta sus propias complejidades:
 ---
 
 ### Flujo de Procesos en CQRS (según AWS)
+
+[CQRS en AWS](https://aws.amazon.com/es/blogs/aws-spanish/cqrs-en-aws-sincronizando-los-servicios-de-command-y-query-con-el-estandar-transactional-outbox-la-tecnica-transaction-log-tailing-y-el-amazon-dynamodb-streams/)
 
 Tu descripción del flujo de procesos es muy clara y ayuda a entender cómo funciona en la práctica:
 
@@ -92,10 +94,11 @@ def obtener_pedido(id: int):
 
 ### ❌ Problemas aquí:
 
-1. **Todo usa el mismo modelo (`Pedido`) para leer y escribir**
-2. Si cambias el modelo para una consulta (por ejemplo, quieres mostrar un campo urgente: true/false si la cantidad es mayor que 100), **rompes el flujo de creación**
-3. No hay separación de responsabilidades: todo mezclado en el controlador
-4. Testing y evolución se vuelven difíciles
+
+
+1. No hay separación de responsabilidades: todo mezclado en el controlador. Acoplamiento.
+2. En testing tienes que hacer mocking
+3. Escalabilidad horizontal en escrituras y lecturas
 
 ---
 

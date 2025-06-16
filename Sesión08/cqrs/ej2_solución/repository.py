@@ -13,6 +13,7 @@ class PedidoRepository:
     def get_by_id(self, pedido_id: int):
         return self.db.query(Pedido).filter_by(id=pedido_id).first()
 
+    # Métodos nuevos
     def get_all_by_usuario(self, usuario_id: int):
         return self.db.query(Pedido).filter_by(usuario_id=usuario_id).all()
 

@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException
 from db import Base, engine, SessionLocal
-from repository import PedidoRepository
+from repository import PedidoRepository # Adaptador
 from handlers.command_handler import CrearPedidoHandler, CancelarPedidoHandler, EntregarPedidoHandler
 from handlers.query_handler import GetPedidoHandler, ListarPedidosPorUsuarioHandler, ContarPedidosPendientesHandler
 from schemas import CreatePedidoCommand, CancelarPedidoCommand, EntregarPedidoCommand, PedidoDTO
+import uvicorn
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
@@ -17,7 +18,7 @@ def get_db():
 
 @app.post("/pedidos", response_model=PedidoDTO)
 def crear_pedido(cmd: CreatePedidoCommand, db=Depends(get_db)):
-    handler = CrearPedidoHandler(PedidoRepository(db))
+    handler = CrearPedidoHandler(PedidoRepository(db)) # Siempre se le pasa el adaptador con la bd al handler
     pedido = handler.execute(cmd)
     return PedidoDTO.model_validate(pedido)
 
@@ -54,3 +55,6 @@ def listar_pedidos(usuario_id: int, db=Depends(get_db)):
 def contar_pedidos_pendientes(db=Depends(get_db)):
     handler = ContarPedidosPendientesHandler(PedidoRepository(db))
     return {"pendientes": handler.execute()}
+
+if __name__ == '__main__':
+    uvicorn.run("main:app", host='0.0.0.0', port=8000, reload=True)

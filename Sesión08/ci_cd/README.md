@@ -1,47 +1,72 @@
-Perfecto. A continuación te presento un desarrollo completo y profesional sobre cómo implementar **CI/CD (Integración y Entrega/Despliegue Continua)** en proyectos basados en **FastAPI**, con una **arquitectura de microservicios** y estructura **hexagonal**.
-
----
 
 # 🛠 CI/CD para Proyectos FastAPI con Microservicios y Arquitectura Hexagonal
 
 ---
 
-## 🎯 Objetivo General
+##  Objetivo General
 
 Diseñar e implementar un pipeline CI/CD profesional que:
 
-* Automatice pruebas, linting y análisis estático.
-* Construya imágenes Docker y las publique.
-* Despliegue automáticamente microservicios FastAPI (con arquitectura hexagonal) en un entorno controlado (Minikube, Kubernetes, Docker Swarm, o nube).
-* Implemente validaciones de calidad y seguridad (OWASP, dependencias, escaneo de contenedores).
+* Automatizar pruebas, linting y análisis estático.
+* Construir imágenes Docker y publicarlas.
+* Despliegue automático de microservicios FastAPI (con arquitectura hexagonal) en un entorno controlado (Minikube, Kubernetes, Docker Swarm, o nube).
+* Implementación de validaciones de calidad y seguridad (OWASP, dependencias, escaneo de contenedores).
 
 ---
 
-## 🧱 Estructura del Proyecto (Ejemplo)
 
-Supongamos un sistema con 3 microservicios:
+
+## 🧱 Estructura del proyecto
 
 ```
-.
-├── services/
-│   ├── users/
-│   │   ├── app/                # Arquitectura hexagonal aquí
-│   │   ├── Dockerfile
-│   │   ├── tests/
-│   │   └── requirements.txt
-│   ├── orders/
-│   └── products/
-├── api-gateway/
-│   ├── nginx.conf
-│   └── Dockerfile
-├── docker-compose.yaml
-├── k8s/
-│   ├── users-deployment.yaml
-│   ├── ...
-└── .github/
-    └── workflows/
-        └── ci-cd.yaml
+cqrs_product/
+├── app/
+│   ├── domain/
+│   │   └── entities/product.py
+│   ├── application/
+│   │   ├── commands/create_product.py
+│   │   ├── queries/get_product.py
+│   │   ├── dtos/
+│   │   │   └── product_dto.py
+│   │   ├── ports/
+│   │   │   └── product_repository.py
+│   ├── infrastructure/
+│   │   └── memory/product_repository.py
+│   ├── interfaces/
+│   │   └── api/routes.py
+│   └── main.py
+├── tests/
+│   └── test_routes.py
+├── requirements.txt
+├── requirements-dev.txt
+└── pyproject.toml
 ```
+
+---
+
+##  Funcionalidad mínima
+
+###  Commands (write)
+
+* `POST /products` → crea producto
+
+###  Queries (read)
+
+* `GET /products/{id}` → obtiene producto
+* `GET /products` → lista todos los productos
+
+---
+
+##  Componentes clave para CI/CD
+
+* `ProductRepositoryPort`: puerto hexagonal
+* `InMemoryProductRepository`: adaptador
+* `CreateProductCommandHandler` y `GetProductQueryHandler`
+* Test para flujo de creación + consulta
+* Configuración de `pytest`, `mypy`, `ruff`, `bandit`, `coverage`, `Makefile`
+
+---
+
 
 ---
 
@@ -199,4 +224,3 @@ jobs:
 
 ---
 
-¿Te gustaría que prepare un repositorio base con este pipeline listo para usar (con microservicio de ejemplo, tests y workflow funcional)?

@@ -8,4 +8,4 @@ class Pedido(Base):
     producto = Column(String)
     cantidad = Column(Integer)
     total = Column(Float)
-    estado = Column(String, default="pendiente")
+    estado = Column(String, default="pendiente")  # Nuevo campo en modelo

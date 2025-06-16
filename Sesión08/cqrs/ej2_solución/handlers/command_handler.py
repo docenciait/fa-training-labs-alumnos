@@ -13,10 +13,11 @@ class CrearPedidoHandler:
             producto=command.producto,
             cantidad=command.cantidad,
             total=total,
-            estado="pendiente"
+            estado="pendiente"  # Nuevo campo
         )
         return self.repo.save(pedido)
 
+# Nuevo CMD 1
 class CancelarPedidoHandler:
     def __init__(self, repo: PedidoRepository):
         self.repo = repo
@@ -28,6 +29,7 @@ class CancelarPedidoHandler:
             self.repo.save(pedido)
         return pedido
 
+# Nuevo CMD 2
 class EntregarPedidoHandler:
     def __init__(self, repo: PedidoRepository):
         self.repo = repo

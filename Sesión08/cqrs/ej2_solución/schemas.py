@@ -11,6 +11,7 @@ class CancelarPedidoCommand(BaseModel):
 class EntregarPedidoCommand(BaseModel):
     pedido_id: int
 
+# Para CMD 1
 class PedidoDTO(BaseModel):
     id: int
     usuario_id: int
