@@ -1,0 +1,32 @@
+name: CI - Identity Service
+
+on:
+  push:
+    paths:
+      - 'identity/**'
+  pull_request:
+    paths:
+      - 'identity/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          cd identity
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          cd identity
+          pytest --maxfail=1 --disable-warnings -q

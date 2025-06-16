@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "identity"
+version = "0.1.0"
+description = ""
+authors = ["ParkWise Team"]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.dev-dependencies]
+pytest = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = "."
